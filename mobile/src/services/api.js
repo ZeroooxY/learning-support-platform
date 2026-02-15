@@ -5,7 +5,7 @@ import { Platform } from 'react-native';
 
 // For Android Emulator, use 10.0.2.2. For iOS simulator, use localhost.
 // Getting IP dynamically is harder without extra config, so we default to a reasonable guess.
-const API_URL = Platform.OS === 'android' ? 'http://10.0.2.2:5000/api' : 'http://localhost:5000/api';
+const API_URL = process.env.EXPO_PUBLIC_API_URL || (Platform.OS === 'android' ? 'http://10.0.2.2:5000/api' : 'http://localhost:5000/api');
 
 const api = axios.create({
     baseURL: API_URL,
