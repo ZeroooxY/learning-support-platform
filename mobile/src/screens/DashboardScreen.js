@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { StyleSheet, View, Text, FlatList, TouchableOpacity, RefreshControl, ActivityIndicator } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons'; // Assuming Expo, or use react-native-vector-icons
 
 import api from '../services/api';
