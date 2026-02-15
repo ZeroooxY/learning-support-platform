@@ -1,7 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, View, Text, ScrollView, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import api from '../services/api';
+import { AuthContext } from '../context/AuthContext';
 import { COLORS, SIZES } from '../constants/theme';
 import Button from '../components/Button';
 import Card from '../components/Card';
@@ -11,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons'; // Assuming Expo
 const DetailScreen = () => {
     const route = useRoute();
     const navigation = useNavigation();
+    const { user } = useContext(AuthContext);
     const { id } = route.params;
 
     const [material, setMaterial] = useState(null);
@@ -55,6 +57,16 @@ const DetailScreen = () => {
         );
     };
 
+    const handleSave = async (subId) => {
+        try {
+            const response = await api.post(`/materials/save/${subId}`);
+            Alert.alert('Success', response.data.message || 'Material saved');
+        } catch (error) {
+            console.error('Save error:', error);
+            Alert.alert('Error', 'Failed to save material');
+        }
+    };
+
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
@@ -85,12 +97,14 @@ const DetailScreen = () => {
                Actually SavedCourse.jsx suggests saving is possible. Let's check if Detail.jsx has save.
                I'll skip save button for now to match exactly what I saw or keep it simple.
            */}
-                    <Button
-                        title="Delete Material"
-                        type="danger"
-                        onPress={handleDelete}
-                        style={{ marginTop: 20 }}
-                    />
+                    {user?.role === 'admin' && (
+                        <Button
+                            title="Delete Material"
+                            type="danger"
+                            onPress={handleDelete}
+                            style={{ marginTop: 20 }}
+                        />
+                    )}
                 </View>
             </Card>
 
@@ -98,22 +112,27 @@ const DetailScreen = () => {
             <Text style={styles.sectionTitle}>Sub-Materials</Text>
             {material.subMaterials && material.subMaterials.length > 0 ? (
                 material.subMaterials.map((sub, index) => (
-                    <TouchableOpacity
-                        key={index}
-                        activeOpacity={0.8}
-                        onPress={() => navigation.navigate('SubDetail', { id: material.id, subId: sub.id, title: sub.title })}
-                    >
-                        <Card style={styles.subCard}>
+                    <Card key={index} style={styles.subCard}>
+                        <TouchableOpacity
+                            activeOpacity={0.8}
+                            onPress={() => navigation.navigate('SubDetail', { id: material.id, subId: sub.id, title: sub.title })}
+                            style={{ flex: 1 }}
+                        >
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <View style={{ flex: 1 }}>
                                     <Text style={styles.subTitle}>{sub.title}</Text>
                                     <Text style={styles.subDesc}>{sub.description}</Text>
                                 </View>
-                                {/* Icon or indicator */}
-                                <Text style={{ fontSize: 20, color: COLORS.textLight }}>›</Text>
+                                <Text style={{ fontSize: 20, color: COLORS.textLight, marginRight: 8 }}>›</Text>
                             </View>
-                        </Card>
-                    </TouchableOpacity>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => handleSave(sub.id)}
+                            style={styles.saveButton}
+                        >
+                            <Ionicons name="add-circle" size={28} color={COLORS.primary} />
+                        </TouchableOpacity>
+                    </Card>
                 ))
             ) : (
                 <Text style={styles.emptyText}>No sub-materials available.</Text>
@@ -168,6 +187,11 @@ const styles = StyleSheet.create({
     subCard: {
         padding: 16,
         marginBottom: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    saveButton: {
+        padding: 8,
     },
     subTitle: {
         fontSize: 18,

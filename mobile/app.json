@@ -13,6 +13,11 @@
     },
     "android": {
       "package": "com.learningplatform.mobile"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "41379b3e-a7f7-4858-8a05-cb07db7ace15"
+      }
     }
   }
 }

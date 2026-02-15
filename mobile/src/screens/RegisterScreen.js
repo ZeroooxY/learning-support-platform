@@ -22,11 +22,11 @@ const RegisterScreen = () => {
         }
 
         setLoading(true);
-        const result = await register({ username, email, password });
+        const result = await register({ name: username, email, password });
         setLoading(false);
 
         if (!result.success) {
-            Alert.alert('Registration Failed', result.error);
+            Alert.alert('Registration Failed', JSON.stringify(result.error));
         }
     };
 

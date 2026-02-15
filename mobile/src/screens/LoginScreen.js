@@ -25,7 +25,7 @@ const LoginScreen = () => {
         setLoading(false);
 
         if (!result.success) {
-            Alert.alert('Login Failed', result.error);
+            Alert.alert('Login Failed', JSON.stringify(result.error));
         }
     };
 
